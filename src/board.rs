@@ -6,7 +6,7 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new() -> Game {
+    fn new() -> Game {
         let row_one = vec![
             String::from("-"),
             String::from("-"),
@@ -28,12 +28,17 @@ impl Game {
         }
     }
 
-    pub fn draw(self: &Self) {
+    fn draw(self: &Self) {
         for row in &self.board {
             for column in row {
                 print!("{} ", column);
             }
             println!("")
         }
+    }
+
+    pub fn start() {
+        let game = Game::new();
+        game.draw();
     }
 }
