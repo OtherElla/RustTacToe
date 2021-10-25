@@ -1,7 +1,8 @@
 mod board;
 
+use board::{Game};
+
 fn main() {
-    let game = board::Game::new();
+    let game = Game::new();
     game.draw();
-    println!("Hello, world!");
 }
