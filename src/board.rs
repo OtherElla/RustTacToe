@@ -28,8 +28,8 @@ impl Game {
         }
     }
 
-    pub fn draw(mut self: Self) {
-        for row in self.board.iter_mut() {
+    pub fn draw(self: &Self) {
+        for row in &self.board {
             for column in row {
                 print!("{} ", column);
             }
