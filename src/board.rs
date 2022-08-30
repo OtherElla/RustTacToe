@@ -5,7 +5,6 @@ type Board = Vec<Vec<String>>;
 pub struct Game {
     board: Board,
     is_player_one_turn: bool,
-    is_game_over: bool,
 }
 
 impl Game {
@@ -15,7 +14,6 @@ impl Game {
         let row_three = vec![String::from("-"), String::from("-"), String::from("-")];
         Game {
             board: vec![row_one, row_two, row_three],
-            is_game_over: false,
             is_player_one_turn: true,
         }
     }
@@ -29,30 +27,12 @@ impl Game {
         }
     }
 
-    pub fn get_move() -> u32 {
-        loop {
-            let mut player_input = String::new();
-            println!(
-                "\nPlease enter your move (an integer between \
-                1 and 9): "
-            );
-
-            match io::stdin().read_line(&mut player_input) {
-                Err(_) => print!("Error reading input, try again!"),
-                Ok(n) => match Game::validate(player_input) {
-                    Err(err) => print!("{}", err),
-                    Ok(num) => return num,
-                },
-            }
-        }
-    }
-
-    fn validate(input: String) -> Result<u32, String> {
-        match input.trim().parse::<u32>() {
+    fn validate(input: String) -> Result<usize, String> {
+        match input.trim().parse::<usize>() {
             Err(_) => Err(String::from("Please input a valid unsigned integer!")),
             Ok(number) => {
-                if number > 0 && number < 10 {
-                    Ok(number)
+                if number > 0 && number < 4 {
+                    Ok(number - 1)
                 } else {
                     Err(String::from(
                         "Please input a number, between \
@@ -63,14 +43,52 @@ impl Game {
         }
     }
 
-    pub fn start() {
-        let game = Game::new();
+    pub fn get_u32(prompt: String) -> usize {
         loop {
-            if game.is_game_over {
-                break;
+            let mut player_input = String::new();
+            println!("\n{}", prompt);
+            match io::stdin().read_line(&mut player_input) {
+                Err(_) => print!("Error reading input, try again!"),
+                Ok(_) => match Game::validate(player_input) {
+                    Err(err) => print!("{}", err),
+                    Ok(num) => return num,
+                },
             }
-            game.draw();
-            Game::get_move();
+        }
+    }
+
+    pub fn get_move() -> (usize, usize) {
+        let row = Game::get_u32(String::from("What is the row number?"));
+        let column = Game::get_u32(String::from("What is the column number?"));
+        return (row, column);
+    }
+
+    pub fn is_game_over() -> u32 {
+        return 2;
+    }
+
+    pub fn start() {
+        let mut game = Game::new();
+        loop {
+            match Game::is_game_over() {
+                0 => println!("X WINS!"),
+                1 => println!("O WINS"),
+                _ => {
+                    let (row, column) = Game::get_move();
+                    if game.board[row][column] == "-" {
+                        if game.is_player_one_turn {
+                            game.board[row][column] = String::from("x");
+                            game.is_player_one_turn = false;
+                        } else {
+                            game.board[row][column] = String::from("o");
+                            game.is_player_one_turn = true;
+                        }
+                    } else {
+                        println!("Spot taken.")
+                    }
+                    game.draw();
+                }
+            }
         }
     }
 }
